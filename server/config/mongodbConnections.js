@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-dotenv.config();
+const mongoose = require("mongoose");
 
-const db=mongoose.connect(process.env.MONGODB_URI).then(() => {
-    console.log('Connected to MongoDB');
-}).catch(err => { console.log("error in mongodb", err); });
+mongoose.connect(`${process.env.MONGODB_URI}`);
+let db = mongoose.connection;
+db.once("open", function(){
+    console.log("connected");
+});
 
 module.exports = db;
