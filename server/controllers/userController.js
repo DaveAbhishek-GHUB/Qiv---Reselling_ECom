@@ -16,11 +16,6 @@ const register = async (req, res) => {
             return res.status(400).json({ error: "User with this email already exists" });
         }
 
-        user = await User.findOne({ username: req.body.username });
-        if (user) {
-            return res.status(400).json({ error: "Username is already taken" });
-        }
-
         // Create new user
         user = new User({
             username: req.body.username,
