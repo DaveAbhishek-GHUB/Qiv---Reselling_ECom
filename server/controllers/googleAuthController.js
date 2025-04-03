@@ -38,17 +38,7 @@ const handleGoogleLogin = async (profile) => {
         }
         
         // Generate JWT token
-        const token = jwt.sign(
-            { 
-                userId: user._id,
-                email: user.email, 
-                username: user.username,
-                authType: 'google'
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-        
+        const token = user.generateAuthToken();
         return { user, token };
     } catch (error) {
         throw error;

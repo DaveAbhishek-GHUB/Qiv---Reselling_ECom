@@ -2,8 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const userRouter = require('./routes/userRouter');
 const authRouter = require('./routes/authRouter');
-const passport = require('passport');
-const session = require('express-session');
+const setupMiddleware = require('./middleware');
+
 // Load environment variables first
 dotenv.config();
 
@@ -14,19 +14,11 @@ require('./config/googleStrategy');
 
 const port = process.env.PORT || 3000;
 const app = express();
-app.use(express.json());
 
-// Initialize session middleware
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false
-}));
+// Setup all middleware
+setupMiddleware(app);
 
-// Initialize passport
-app.use(passport.initialize());
-app.use(passport.session());
-
+// Routes
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
 

@@ -26,7 +26,8 @@ const register = async (req, res) => {
             username: req.body.username,
             email: req.body.email,
             password: req.body.password,
-            confirmPassword: req.body.confirmPassword
+            confirmPassword: req.body.confirmPassword,
+            authType: 'local'  // Set the authType for local registration
         });
 
         // Hash password
@@ -37,12 +38,7 @@ const register = async (req, res) => {
         // Save user
         await user.save();
 
-        // Generate JWT token
-        const token = jwt.sign(
-            { email: user.email, username: user.username },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        const token = user.generateAuthToken();
 
         // Set cookie
         res.cookie('token', token, {
@@ -61,7 +57,8 @@ const register = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
+        console.error('Registration error:', error);  // Add error logging
+        res.status(500).json({ error: error.message || "Internal server error" });
     }
 };
 

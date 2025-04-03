@@ -58,6 +58,11 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
+userSchema.methods.generateAuthToken = function() {
+    const token = jwt.sign({ email: this.email }, process.env.JWT_SECRET);
+    return token;
+}
+
 const validateUser = (user) => {
     const schema = Joi.object({
         username: Joi.string()
