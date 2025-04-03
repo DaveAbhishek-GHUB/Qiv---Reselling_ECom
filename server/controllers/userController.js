@@ -33,7 +33,7 @@ const register = async (req, res) => {
         // Save user
         await user.save();
 
-        const token = user.generateAuthToken();
+        const token = await user.generateAuthToken();
 
         // Set cookie
         res.cookie('token', token, {
@@ -74,12 +74,7 @@ const login = async (req, res) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign(
-            { email: user.email, username: user.username },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
+        const token = await user.generateAuthToken();
         // Set cookie
         res.cookie('token', token, {
             httpOnly: true,
