@@ -19,9 +19,22 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Please enter a valid email address"]
     },
+    authType: {
+        type: String,
+        required: true,
+        enum: ['local', 'google'],
+        default: 'local'
+    },
+    googleId: {
+        type: String,
+        sparse: true,
+        unique: true
+    },
     password: {
         type: String,
-        required: [true, "Password is required"],
+        required: function() {
+            return this.authType === 'local';
+        },
         minlength: [8, "Password must be at least 8 characters long"],
         match: [
             /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/, 
@@ -30,11 +43,13 @@ const userSchema = new mongoose.Schema({
     },
     confirmPassword: {
         type: String,
-        required: [true, "Please confirm your password"],
+        required: function() {
+            return this.authType === 'local';
+        },
         minlength: [8, "Password must be at least 8 characters long"],
         validate: {
             validator: function(value) {
-                return value === this.password;
+                return this.authType === 'google' || value === this.password;
             },
             message: "Passwords do not match"
         }

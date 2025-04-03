@@ -1,14 +1,20 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20');
+const { handleGoogleLogin } = require('../controllers/googleAuthController');
 
 passport.use(
     new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    }, function(accessToken, refreshToken, profile, done){
-        console.log(profile);
-        done(null, profile);
+    }, async function(accessToken, refreshToken, profile, done) {
+        try {
+            const { user, token } = await handleGoogleLogin(profile);
+            user.token = token; // Add token to user object for use in callback
+            done(null, user);
+        } catch (error) {
+            done(error, null);
+        }
     })
 );
 
