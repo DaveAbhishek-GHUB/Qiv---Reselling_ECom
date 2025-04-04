@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { loginUser, clearError } from '../redux/slices/Auth/authSlice';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 // Validation Schema
 const LoginSchema = Yup.object().shape({
@@ -120,6 +121,14 @@ const LoginPage = () => {
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>
+              
+              <div className="my-4 flex items-center">
+                <div className="flex-grow h-px bg-gray-300"></div>
+                <span className="px-3 text-gray-500 text-sm">OR</span>
+                <div className="flex-grow h-px bg-gray-300"></div>
+              </div>
+              
+              <GoogleLoginButton />
             </Form>
           )}
         </Formik>

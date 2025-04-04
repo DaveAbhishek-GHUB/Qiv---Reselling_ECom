@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { HiOutlineMenu } from 'react-icons/hi';
+import { FiSearch, FiUser, FiShoppingBag } from 'react-icons/fi';
 
 // Update component name to follow React naming convention (PascalCase)
 function HeaderComponent() {
@@ -16,9 +18,7 @@ function HeaderComponent() {
               className="text-gray-600 hover:text-gray-900"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <HiOutlineMenu className="h-6 w-6" />
             </button>
           </div>
 
@@ -46,23 +46,17 @@ function HeaderComponent() {
 
             {/* Search */}
             <button className="text-gray-600 hover:text-gray-900">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <FiSearch className="h-5 w-5" />
             </button>
 
             {/* Account */}
             <Link to="/account" className="text-gray-600 hover:text-gray-900">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+              <FiUser className="h-5 w-5" />
             </Link>
 
             {/* Cart */}
             <Link to="/cart" className="text-gray-600 hover:text-gray-900">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
+              <FiShoppingBag className="h-5 w-5" />
             </Link>
           </div>
         </div>
