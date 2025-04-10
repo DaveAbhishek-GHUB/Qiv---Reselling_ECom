@@ -55,6 +55,14 @@ const userSchema = new mongoose.Schema({
             message: "Passwords do not match"
         }
     },
+    resetPasswordOTP: {
+        type: String,
+        default: null
+    },
+    resetPasswordOTPExpiry: {
+        type: Date,
+        default: null
+    }
 }, {
     timestamps: true
 });

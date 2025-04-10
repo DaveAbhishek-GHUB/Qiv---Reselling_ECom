@@ -12,6 +12,7 @@ const api = axios.create({
 // Helper function to extract error message
 const getErrorMessage = (error) => {
   if (typeof error === 'string') return error;
+  if (error.response?.data?.error) return error.response.data.error;
   if (error.response?.data?.message) return error.response.data.message;
   if (error.response?.data && typeof error.response.data === 'string') return error.response.data;
   if (error.message) return error.message;
@@ -55,6 +56,30 @@ export const loginUser = async (userData) => {
 export const checkAuth = async () => {
   try {
     const response = await api.get('/users/me');
+    return handleAuthResponse(response);
+  } catch (error) {
+    throw getErrorMessage(error);
+  }
+};
+
+// Request password reset (send OTP)
+export const requestPasswordReset = async (email) => {
+  try {
+    const response = await api.post('/users/forgot-password', { email });
+    return handleAuthResponse(response);
+  } catch (error) {
+    throw getErrorMessage(error);
+  }
+};
+
+// Verify OTP and reset password
+export const verifyOTPAndResetPassword = async (resetData) => {
+  try {
+    const response = await api.post('/users/reset-password', {
+      email: resetData.email,
+      otp: resetData.otp,
+      newPassword: resetData.newPassword
+    });
     return handleAuthResponse(response);
   } catch (error) {
     throw getErrorMessage(error);

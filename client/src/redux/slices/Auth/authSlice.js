@@ -2,7 +2,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { 
   registerUser as registerUserAPI, 
   loginUser as loginUserAPI, 
-  checkAuth as checkAuthAPI
+  checkAuth as checkAuthAPI,
+  requestPasswordReset as requestPasswordResetAPI,
+  verifyOTPAndResetPassword as verifyOTPAndResetPasswordAPI
 } from '../../API/Auth/api';
 
 // Create async thunk for registration
@@ -48,11 +50,44 @@ export const checkAuth = createAsyncThunk(
   }
 );
 
+// Create async thunk for requesting password reset (send OTP)
+export const requestPasswordReset = createAsyncThunk(
+  'auth/requestPasswordReset',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await requestPasswordResetAPI(email);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        typeof error === 'string' ? error : 'Password reset request failed'
+      );
+    }
+  }
+);
+
+// Create async thunk for verifying OTP and resetting password
+export const verifyOTPAndResetPassword = createAsyncThunk(
+  'auth/verifyOTPAndResetPassword',
+  async (resetData, { rejectWithValue }) => {
+    try {
+      const response = await verifyOTPAndResetPasswordAPI(resetData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        typeof error === 'string' ? error : 'Password reset verification failed'
+      );
+    }
+  }
+);
+
 const initialState = {
   user: null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
+  passwordResetEmail: null,
+  passwordResetSuccess: false,
+  passwordResetMessage: null,
 };
 
 export const authSlice = createSlice({
@@ -66,6 +101,11 @@ export const authSlice = createSlice({
       state.user = null;
       state.error = null;
       state.isAuthenticated = false;
+    },
+    clearPasswordResetState: (state) => {
+      state.passwordResetEmail = null;
+      state.passwordResetSuccess = false;
+      state.passwordResetMessage = null;
     },
   },
   extraReducers: (builder) => {
@@ -117,9 +157,47 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
+      })
+      
+      // Request password reset cases
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.passwordResetSuccess = false;
+        state.passwordResetMessage = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.passwordResetEmail = action.payload.email;
+        state.passwordResetSuccess = true;
+        state.passwordResetMessage = action.payload.message;
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.passwordResetSuccess = false;
+      })
+      
+      // Verify OTP and reset password cases
+      .addCase(verifyOTPAndResetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(verifyOTPAndResetPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.error = null;
+        state.isAuthenticated = true;
+        state.passwordResetSuccess = true;
+        state.passwordResetMessage = action.payload.message;
+        state.passwordResetEmail = null;
+      })
+      .addCase(verifyOTPAndResetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearError, logout } = authSlice.actions;
+export const { clearError, logout, clearPasswordResetState } = authSlice.actions;
 export default authSlice.reducer;
